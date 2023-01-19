@@ -1,4 +1,5 @@
 #include <string>
+#include <cstdlib>
 #include <iostream>
 using namespace std;
 
@@ -39,11 +40,83 @@ int charToInt (string s){
     }
 }
 
+string intToChar (int i){
+    /*
+    Mengubah angka (int) menjadi string yang sepadan dengan nilai kartu
+    Misalkan 'A'=1, '2'=2, 'J'=11, 'Q'=12, 'K'=13
+    */
+    if (i==1){
+        return "A";
+    } else if (i==2){
+        return "2";
+    } else if (i==3){
+        return "3";
+    } else if (i==4){
+        return "4";
+    } else if (i==5){
+        return "5";
+    } else if (i==6){
+        return "6";
+    } else if (i==7){
+        return "7";
+    } else if (i==8){
+        return "8";
+    } else if (i==9){
+        return "9";
+    } else if (i==10){
+        return "10";
+    } else if (i==11){
+        return "J";
+    } else if (i==12){
+        return "Q";
+    } else if (i==13){
+        return "K";
+    }
+}
+
+void brute_force(int angkaKartu[4]){
+    /* KAMUS LOKAL */
+    int counter1,counter2,counter3,temp;
+    /* Permutasi 4 Kartu */
+    for (counter1=0; counter1<=3; counter1++){
+        /* Swap angkaKartu[0] dengan elemen indeks 0,1,2,3 */
+        temp = angkaKartu[0];
+        angkaKartu[0] = angkaKartu[counter1];
+        angkaKartu[counter1] = temp;
+
+        for (counter2=1; counter2<=3; counter2++){
+            /* Swap angkaKartu[1] dengan elemen indeks 1,2,3 */
+            temp = angkaKartu[1];
+            angkaKartu[1] = angkaKartu[counter2];
+            angkaKartu[counter2] = temp;
+
+            for (counter3=2; counter3<=3; counter3++){
+                /* Swap angkaKartu[2] dengan elemen indeks 2,3 */
+                temp = angkaKartu[2];
+                angkaKartu[2] = angkaKartu[counter3];
+                angkaKartu[counter3] = temp;
+
+                /*
+                for (int count=0; count<=3; count++){
+                    cout << angkaKartu[count] << " ";
+                }
+                cout << "\n";
+                */
+
+                /* Operasi */
+                
+            }
+        }
+    }
+}
+
+
 int main(){
     /* KAMUS */
     std::string kartu[4]; //array of string yang menyimpan input dari pengguna
     int angkaKartu[4]; //array of int yang menyimpan angka / nilai kartu
     int count; //angka penghitung
+    int inputType; //jenis input: input dari pengguna atau random
     bool isInputValid = false; //validasi input
 
     /* ALGORITMA */
@@ -103,32 +176,58 @@ int main(){
     cout << "======================================================================================================================================================\n\n";
 
     /* INPUT */
-    while (!isInputValid){
-        /* Input 4 Kartu */
-        cout << "Silakan masukkan 4 angka kartu [A,2,3,4,5,6,7,8,9,10,J,Q,K]!\n";
+    cout << "Silakan pilih jenis input!\n1. Input dari pengguna\n2. Input random\n";
+    cin >> inputType;
+    cout << "\n";
+
+    if (inputType==1){
+        /* Input dari pengguna */
+        while (!isInputValid){
+            /* Input 4 Kartu */
+            cout << "Silakan masukkan 4 angka kartu [A,2,3,4,5,6,7,8,9,10,J,Q,K]!\n";
+            for (count=0; count<=3; count++){
+                std::cin >> kartu[count];
+            }
+            /* Ubah Input dari Bentuk String Menjadi Int */
+            count = 0;
+            while (count <=3 && charToInt(kartu[count]) > 0){
+                angkaKartu[count] = charToInt(kartu[count]);
+                //std::cout << angkaKartu[count] << "\n";
+                isInputValid = true;
+                count++;
+            }
+            /* Validasi Input */
+            if (charToInt(kartu[count]) == -1){
+                cout << "Masukan tidak sesuai.\n\n";
+                isInputValid = false;
+            }
+        }
+    } else{
+        /* Input Random */
+        angkaKartu[0] = rand() % 13 + 1;
+        angkaKartu[1] = rand() % 13 + 1;
+        angkaKartu[2] = rand() % 13 + 1;
+        angkaKartu[3] = rand() % 13 + 1;
         for (count=0; count<=3; count++){
-            std::cin >> kartu[count];
-        }
-        /* Ubah Input dari Bentuk String Menjadi Int */
-        count = 0;
-        while (count <=3 && charToInt(kartu[count]) > 0){
-            angkaKartu[count] = charToInt(kartu[count]);
-            //std::cout << angkaKartu[count] << "\n";
-            isInputValid = true;
-            count++;
-        }
-        /* Validasi Input */
-        if (charToInt(kartu[count]) == -1){
-            cout << "Anda salah memasukkan input!\n\n";
-            isInputValid = false;
+            kartu[count] = intToChar(angkaKartu[count]);
         }
     }
-
+    /* Cetak 4 angka kartu */
+    cout << "\nKartu: ";
+    for (count=0; count<=3; count++){
+        cout << kartu[count] << " ";
+    }
+    cout << "\nAngka: ";
+    for (count=0; count<=3; count++){
+        cout << angkaKartu[count] << " ";
+    }
+    
     //for (int count=0; count<=3; count++){
     //    std::cout << angkaKartu[count] << "\n";
     //}
 
     /* PROSES BRUTE FORCE */
+    //brute_force(angkaKartu);
 
     return 0;
 }
