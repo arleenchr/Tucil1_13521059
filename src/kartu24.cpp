@@ -1,7 +1,9 @@
 #include <string>
-#include <cstdlib>
 #include <vector>
+#include <cstdlib>
+#include <time.h>
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 /* KAMUS GLOBAL */
@@ -94,20 +96,21 @@ float charToOp (char op, int operand1, int operand2){
 
 void brute_force(int angkaKartu[4]){
     /* KAMUS LOKAL */
-    int counter1,counter2,counter3,temp;
+    int counter1,counter2,counter3; //indeks permutasi urutan kartu
+    int temp; //variabel untuk swap kartu
     char list_operator[4] = {'+','-','*','/'};
-    int countOp1,countOp2,countOp3;
-    float hasil1,hasil2,hasil;
+    int countOp1,countOp2,countOp3; //indeks permutasi urutan operator
+    float hasil1,hasil2,hasil; //hasil perhitungan
     /* ALGORITMA */
 
     //std::cout << list_operator[0] << " " << list_operator[1] << " " << list_operator[2] << " " << list_operator[3] << "\n";
-    int angka0 = angkaKartu[0];
+    int angka0 = angkaKartu[0]; //fixed urutan angka asli
     int angka1 = angkaKartu[1];
     int angka2 = angkaKartu[2];
     int angka3 = angkaKartu[3];
     /* Permutasi 4 Kartu */
     for (counter1=0; counter1<=3; counter1++){
-        angkaKartu[0] = angka0;
+        angkaKartu[0] = angka0; //kembalikan ke urutan kartu aslinya
         angkaKartu[1] = angka1;
         angkaKartu[2] = angka2;
         angkaKartu[3] = angka3;
@@ -127,7 +130,6 @@ void brute_force(int angkaKartu[4]){
                 temp = angkaKartu[2];
                 angkaKartu[2] = angkaKartu[counter3];
                 angkaKartu[counter3] = temp;
-
                 /*
                 for (int count=0; count<=3; count++){
                     cout << angkaKartu[count] << " ";
@@ -140,9 +142,7 @@ void brute_force(int angkaKartu[4]){
                     for (countOp2=0; countOp2<=3; countOp2++){
                         for (countOp3=0; countOp3<=3; countOp3++){
                             /* list_operator[countOp1] list_operator[countOp2] list_operator[countOp3] */
-
                             //std::cout << list_operator[countOp1] << list_operator[countOp2] << list_operator[countOp3] << "\n";
-
                             /* jenis operasi kurung:
                             ((A  _  B) _  C) _ D
                             ( A  _ (B  _  C))_ D
@@ -212,6 +212,9 @@ int main(){
     int inputType; //jenis input: input dari pengguna atau random
     bool isInputValid = false; //validasi input 4 kartu dari pengguna
     bool isInputTypeValid = false; //validasi input random atau dari pengguna
+    char saveSolution; //apakah ingin menyimpan solusi (y/n)
+    std::string filename; //nama file text untuk menyimpan solusi
+    bool isFilenameValid = false; //validasi input nama file
 
     /* ALGORITMA */
     /* Output Title */
@@ -330,15 +333,53 @@ int main(){
     //std::cout << charToOp('+',angkaKartu[2],angkaKartu[3]) << "\n";
 
     /* PROSES BRUTE FORCE */
+    clock_t tStart = clock(); //hitung waktu eksekusi
     brute_force(angkaKartu);
     ln_operation = list_operation.size();
 
     /* OUTPUT */
-    std::cout << ln_operation << " solutions found.\n";
-    for (count=0; count<=ln_operation-1; count++){
-        cout << list_operation[count] << "\n";
+    if (ln_operation==0){
+        std::cout << "No solutions found\n";
+    } else {
+        std::cout << ln_operation << " solutions found\n";
+        for (count=0; count<=ln_operation-1; count++){
+            cout << list_operation[count] << "\n";
+        }
+    }
+    std::cout << "Execution Time: " << (double)(clock() - tStart)/CLOCKS_PER_SEC << "\n\n";
+
+    /* Simpan hasilnya ke text file */
+    std::cout << "Apakah Anda ingin menyimpan solusi? (y/n)\n";
+    std::cin >> saveSolution;
+    
+    if (saveSolution=='y'){
+        /* Simpan solusi */
+        while (!isFilenameValid){
+            std::cout << "Masukkan nama file untuk menyimpan solusi!\n";
+            std::cin >> filename;
+            ofstream outfile;
+            outfile.open("../test/" + filename + ".txt", ios_base::out | ios_base::in);
+            if (!outfile.is_open()){
+                isFilenameValid = true;
+                outfile.open("../test/" + filename + ".txt");
+                outfile << "Kartu: " << kartu[0] << " " << kartu[1] << " " << kartu[2] << " " << kartu[3] << endl;
+                if (ln_operation==0){
+                    outfile << "No solutions found" << endl;
+                } else {
+                    outfile << ln_operation << " solutions found" << endl;
+                    for (count=0; count<=ln_operation-1; count++){
+                        outfile << list_operation[count] << endl;
+                    }
+                }
+                std::cout << "File " << filename << ".txt berhasil tersimpan!\n";
+            } else {
+                std::cout << filename << ".txt sudah ada. Silakan masukkan kembali nama file yang berbeda!\n\n";
+            }
+            outfile.close();
+        }
     }
 
+    //randomizer masih salah
 
     return 0;
 }
