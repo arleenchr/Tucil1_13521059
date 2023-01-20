@@ -2,10 +2,10 @@
 #include <vector>
 #include <cstdlib>
 #include <time.h>
-#include <chrono>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
 
 /* KAMUS GLOBAL */
@@ -96,7 +96,34 @@ float charToOp (char op, float operand1, float operand2){
     }
 }
 
-void brute_force(float angkaKartu[4]){
+vector<string> splitString (const string &s, char delimiter){
+    /* Melakukan split string setiap delimiter */
+    vector<string> hasil;
+    stringstream ss (s);
+    string item;
+    while (getline (ss, item, delimiter)) {
+        hasil.push_back (item);
+    }
+    return hasil;
+}
+
+vector<string> split(const string& str, const string& delim)
+{
+    vector<string> tokens;
+    size_t prev = 0, pos = 0;
+    do
+    {
+        pos = str.find(delim, prev);
+        if (pos == string::npos) pos = str.length();
+        string token = str.substr(prev, pos-prev);
+        if (!token.empty()) tokens.push_back(token);
+        prev = pos + delim.length();
+    }
+    while (pos < str.length() && prev < str.length());
+    return tokens;
+}
+
+void brute_force(vector<float> angkaKartu){
     /* KAMUS LOKAL */
     int counter1,counter2,counter3; //indeks permutasi urutan kartu
     float temp; //variabel untuk swap kartu
@@ -223,8 +250,9 @@ void brute_force(float angkaKartu[4]){
 
 int main(){
     /* KAMUS */
-    std::string kartu[4]; //array of string yang menyimpan input dari pengguna
-    float angkaKartu[4]; //array of int yang menyimpan angka / nilai kartu
+    std::string inputKartu=""; //string input 4 angka kartu yang nanti akan displit ke dalam array kartu
+    vector<string> kartu; //array of string yang menyimpan input dari pengguna
+    vector<float> angkaKartu; //array of int yang menyimpan angka / nilai kartu
     int count; //angka penghitung
     int inputType; //jenis input: input dari pengguna atau random
     bool isInputValid = false; //validasi input 4 kartu dari pengguna
@@ -235,6 +263,7 @@ int main(){
 
     /* ALGORITMA */
     /* Output Title */
+    /*
     std::cout << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWXOxONMMMMMMMMMMMMMMMMWd..kWNXk,.;xKMMMMMWX0kxxxk0NMMMMMNd..c0k;.:KMMMMMMMMMMMMMMMMMMMMMMMNxl0WMMMMMMMMMMMMMM\n";
     std::cout << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMXOOkxolc::coxONMMMWd..kWO;,kKc. ;KMW0o;..     .'cONMXl..xN0OKl.;KMMMMMMMMMMMMMMMMMMMMMKxkXMMMMMMMMMMMMMMMM\n";
     std::cout << "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMWO;         'ckNO..xWN:  ,KX:  ;x:.             ,o: 'OWx..dK: :XMMMMWNNNNWMMMMMMMMWko0WMMMMMMMMMMMMMMMMM\n";
@@ -286,9 +315,9 @@ int main(){
     std::cout << "         $$ |            $$ |      $$ |  $$ |$$  __$$ |$$ | $$ | $$ |$$   ____|      $$    $$ |$$ |  $$ |$$ |   $$$  /  $$   ____|$$ |      \n";
     std::cout << "         $$$$$$$$        $$ |       $$$$$$  | $$$$$$$ |$$ | $$ | $$ | $$$$$$$         $$$$$$  | $$$$$$  |$$ |    $  /    $$$$$$$  $$ |      \n";
     std::cout << "          ________|       __|        ______/   _______| __|  __|  __|  _______|        ______/   ______/  __|     _/      _______| __|      \n\n";
-    std::cout << "                                                         by Arleen Chrysantha Gunardi (13521059)\n\n";
+    std::cout << "                                                     by Arleen Chrysantha Gunardi (13521059)\n\n";
     std::cout << "======================================================================================================================================================\n\n";
-    
+    */
     /* INPUT */
     while (!isInputTypeValid){
         std::cout << "Silakan pilih jenis input!\n1. Input dari pengguna\n2. Input random\n";
@@ -299,9 +328,40 @@ int main(){
             while (!isInputValid){
                 /* Input 4 Kartu */
                 std::cout << "\nSilakan masukkan 4 angka kartu [A,2,3,4,5,6,7,8,9,10,J,Q,K]!\n";
+
                 for (count=0; count<=3; count++){
                     std::cin >> kartu[count];
                 }
+
+                //std::cin >> inputKartu;
+                //cin.ignore();
+                //getline (std::cin, inputKartu, '\n');
+
+                //std::cout << inputKartu;
+                /* Split string input */
+                //kartu = splitString(inputKartu,' ');
+                //kartu = split(inputKartu," ");
+
+                //istringstream iss(inputKartu);
+                /* Iterasi istringstream */
+                /*
+                count = 0;
+                do {
+                    string strAngka;
+                    iss >> strAngka;
+                    kartu[count] = strAngka;
+                    count++;
+                } while (iss);
+                */
+                
+                
+                for (count=0; count<=3; count++){
+                    std::cin >> kartu[count];
+                }
+                
+               //std::cout << inputKartu << "\n";
+               //std::cout << kartu[0] << " " << kartu[1] << " "  << kartu[2] << " "  << kartu[3] << "\n";
+
                 /* Ubah Input dari Bentuk String Menjadi Int */
                 count = 0;
                 while (count <=3 && charToInt(kartu[count]) > 0){
@@ -350,58 +410,51 @@ int main(){
     //std::cout << charToOp('/',angkaKartu[2],angkaKartu[3]) << "\n";
 
     /* PROSES BRUTE FORCE */
-    auto start = std::chrono::system_clock::now(); //waktu awal eksekusi
-
+    clock_t tStart = clock(); //hitung waktu eksekusi
     brute_force(angkaKartu);
     ln_operation = list_operation.size();
 
     /* OUTPUT */
-    std::cout << ln_operation << " solutions found\n";
-    for (count=0; count<=ln_operation-1; count++){
-        cout << list_operation[count] << "\n";
+    if (ln_operation==0){
+        std::cout << "No solutions found\n";
+    } else {
+        std::cout << ln_operation << " solutions found\n";
+        for (count=0; count<=ln_operation-1; count++){
+            cout << list_operation[count] << "\n";
+        }
     }
-    
-    auto end = std::chrono::system_clock::now(); //waktu akhir eksekusi
-    std::cout << "Execution Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms\n\n"; //output durasi eksekusi
-    
-    /* Simpan hasilnya ke text file */
-    isInputValid = false;
-    while (!isInputValid){
-        std::cout << "Apakah Anda ingin menyimpan solusi? (y/n)\n";
-        std::cin >> saveSolution;
+    std::cout << "Execution Time: " << (double)(clock() - tStart)/CLOCKS_PER_SEC * 1000 << " ms\n\n";
 
-        if (saveSolution=='y'){
-            isInputValid = true;
-            /* Simpan solusi */
-            while (!isFilenameValid){
-                std::cout << "Masukkan nama file untuk menyimpan solusi!\n";
-                std::cin >> filename;
-                ofstream outfile;
-                outfile.open("../test/" + filename + ".txt", ios_base::out | ios_base::in);
-                if (!outfile.is_open()){
-                    isFilenameValid = true;
-                    outfile.open("../test/" + filename + ".txt");
-                    outfile << "Kartu: " << kartu[0] << " " << kartu[1] << " " << kartu[2] << " " << kartu[3] << endl;
+    /* Simpan hasilnya ke text file */
+    std::cout << "Apakah Anda ingin menyimpan solusi? (y/n)\n";
+    std::cin >> saveSolution;
+    
+    if (saveSolution=='y'){
+        /* Simpan solusi */
+        while (!isFilenameValid){
+            std::cout << "Masukkan nama file untuk menyimpan solusi!\n";
+            std::cin >> filename;
+            ofstream outfile;
+            outfile.open("../test/" + filename + ".txt", ios_base::out | ios_base::in);
+            if (!outfile.is_open()){
+                isFilenameValid = true;
+                outfile.open("../test/" + filename + ".txt");
+                outfile << "Kartu: " << kartu[0] << " " << kartu[1] << " " << kartu[2] << " " << kartu[3] << endl;
+                if (ln_operation==0){
+                    outfile << "No solutions found" << endl;
+                } else {
                     outfile << ln_operation << " solutions found" << endl;
                     for (count=0; count<=ln_operation-1; count++){
                         outfile << list_operation[count] << endl;
                     }
-
-                    std::cout << "File " << filename << ".txt berhasil tersimpan!\n";
-                } else {
-                    std::cout << filename << ".txt sudah ada. Silakan masukkan kembali nama file yang berbeda!\n\n";
                 }
-                outfile.close();
+                std::cout << "File " << filename << ".txt berhasil tersimpan!\n";
+            } else {
+                std::cout << filename << ".txt sudah ada. Silakan masukkan kembali nama file yang berbeda!\n\n";
             }
-        } else if (saveSolution=='n'){
-            isInputValid = true;
-        } else {
-            isInputValid = false;
-            std::cout << "Masukan tidak sesuai.\n\n";
+            outfile.close();
         }
     }
-    
-    std::cout << "================================================================ Program selesai =====================================================================\n\n";
 
     return 0;
 }
