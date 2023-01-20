@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdlib>
 #include <time.h>
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -10,7 +11,7 @@ using namespace std;
 vector<string> list_operation; //array of strings: list dari semua operasi yang menghasilkan nilai 24
 int ln_operation; //jumlah solusi yang ditemukan (panjang list operation) ln_operation = list_operation.size()
 
-int charToInt (string s){
+float charToInt (string s){
     /*
     Mengubah string menjadi angka yang sepadan dengan nilai kartu
     Misalkan 'A'=1, '2'=2, 'J'=11, 'Q'=12, 'K'=13
@@ -81,33 +82,33 @@ string intToChar (int i){
     }
 }
 
-float charToOp (char op, int operand1, int operand2){
+float charToOp (char op, float operand1, float operand2){
     /* Menghitung operasi antara operand1 dan operand2 dengan operator op */
     if (op=='+'){
-        return (float) operand1 + (float) operand2;
+        return operand1 + operand2;
     } else if (op=='-'){
-        return (float) operand1 - (float) operand2;
+        return operand1 - operand2;
     } else if (op=='*'){
-        return (float) operand1 * (float) operand2;
+        return operand1 * operand2;
     } else if (op=='/'){
-        return (float) operand1 / (float) operand2;
+        return operand1 / operand2;
     }
 }
 
-void brute_force(int angkaKartu[4]){
+void brute_force(float angkaKartu[4]){
     /* KAMUS LOKAL */
     int counter1,counter2,counter3; //indeks permutasi urutan kartu
-    int temp; //variabel untuk swap kartu
+    float temp; //variabel untuk swap kartu
     char list_operator[4] = {'+','-','*','/'};
     int countOp1,countOp2,countOp3; //indeks permutasi urutan operator
     float hasil1,hasil2,hasil; //hasil perhitungan
     /* ALGORITMA */
 
     //std::cout << list_operator[0] << " " << list_operator[1] << " " << list_operator[2] << " " << list_operator[3] << "\n";
-    int angka0 = angkaKartu[0]; //fixed urutan angka asli
-    int angka1 = angkaKartu[1];
-    int angka2 = angkaKartu[2];
-    int angka3 = angkaKartu[3];
+    float angka0 = angkaKartu[0]; //fixed urutan angka asli
+    float angka1 = angkaKartu[1];
+    float angka2 = angkaKartu[2];
+    float angka3 = angkaKartu[3];
     /* Permutasi 4 Kartu */
     for (counter1=0; counter1<=3; counter1++){
         angkaKartu[0] = angka0; //kembalikan ke urutan kartu aslinya
@@ -119,7 +120,17 @@ void brute_force(int angkaKartu[4]){
         angkaKartu[0] = angkaKartu[counter1];
         angkaKartu[counter1] = temp;
 
+        float angkaKomb0 = angkaKartu[0];
+        float angkaKomb1 = angkaKartu[1];
+        float angkaKomb2 = angkaKartu[2];
+        float angkaKomb3 = angkaKartu[3];
+
         for (counter2=1; counter2<=3; counter2++){
+            /* Kembalikan ke urutan kartu swap pertama */
+            angkaKartu[0] = angkaKomb0;
+            angkaKartu[1] = angkaKomb1;
+            angkaKartu[2] = angkaKomb2;
+            angkaKartu[3] = angkaKomb3;
             /* Swap angkaKartu[1] dengan elemen indeks 1,2,3 */
             temp = angkaKartu[1];
             angkaKartu[1] = angkaKartu[counter2];
@@ -154,46 +165,51 @@ void brute_force(int angkaKartu[4]){
                             hasil1 = charToOp(list_operator[countOp1], angkaKartu[0], angkaKartu[1]); //(A _ B)
                             hasil2 = charToOp(list_operator[countOp2], hasil1, angkaKartu[2]); //((A _ B) _ C)
                             hasil = charToOp(list_operator[countOp3], hasil2, angkaKartu[3]); //((A _ B) _ C) _ D
-                            //cout << "hasil = " << hasil << " = " << "((" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + std::to_string(angkaKartu[1]) + ")" + list_operator[countOp2] + std::to_string(angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string(angkaKartu[3]) << "\n";
-                            if (hasil==24){
+                            
+                            if (hasil==24.0 && find(list_operation.begin(), list_operation.end(), "((" + std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + std::to_string((int) angkaKartu[1]) + ")" + list_operator[countOp2] + std::to_string((int) angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string((int) angkaKartu[3])) == list_operation.end()){
                                 //std::cout << "yes\n";
-                                list_operation.push_back("((" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + std::to_string(angkaKartu[1]) + ")" + list_operator[countOp2] + std::to_string(angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string(angkaKartu[3]));
+                                //cout << "hasil = " << hasil << " = " << "((" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + std::to_string(angkaKartu[1]) + ")" + list_operator[countOp2] + std::to_string(angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string(angkaKartu[3]) << "\n";
+                                list_operation.push_back("((" + std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + std::to_string((int) angkaKartu[1]) + ")" + list_operator[countOp2] + std::to_string((int) angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string((int) angkaKartu[3]));
                             }
                             /* ( A  _ (B  _  C))_ D */
                             hasil1 = charToOp(list_operator[countOp2], angkaKartu[1], angkaKartu[2]); //(B _ C)
                             hasil2 = charToOp(list_operator[countOp1], angkaKartu[0], hasil1); //(A _ (B _ C))
                             hasil = charToOp(list_operator[countOp3], hasil2, angkaKartu[3]); //(A _ (B _ C)) _ D
-                            //cout << "hasil = " << hasil << " = " << "(" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + std::to_string(angkaKartu[2]) + "))" + list_operator[countOp3] + std::to_string(angkaKartu[3]) << "\n";
-                            if (hasil==24){
+                            
+                            if (hasil==24.0 && find(list_operation.begin(), list_operation.end(), "(" + std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string((int) angkaKartu[1]) + list_operator[countOp2] + std::to_string((int) angkaKartu[2]) + "))" + list_operator[countOp3] + std::to_string((int) angkaKartu[3])) == list_operation.end()){
                                 //std::cout << "yes\n";
-                                list_operation.push_back("(" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + std::to_string(angkaKartu[2]) + "))" + list_operator[countOp3] + std::to_string(angkaKartu[3]));
+                                //cout << "hasil = " << hasil << " = " << "(" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + std::to_string(angkaKartu[2]) + "))" + list_operator[countOp3] + std::to_string(angkaKartu[3]) << "\n";
+                                list_operation.push_back("(" + std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string((int) angkaKartu[1]) + list_operator[countOp2] + std::to_string((int) angkaKartu[2]) + "))" + list_operator[countOp3] + std::to_string((int) angkaKartu[3]));
                             }
                             /* (A  _  B) _ (C  _ D) */
                             hasil1 = charToOp(list_operator[countOp1], angkaKartu[0], angkaKartu[1]); //(A _ B)
                             hasil2 = charToOp(list_operator[countOp3], angkaKartu[2], angkaKartu[3]); //(C _ D)
                             hasil = charToOp(list_operator[countOp2], hasil1, hasil2); //(A _ B) _ (C _ D)
-                            //cout << "hasil = " << hasil << " = " << "(" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + std::to_string(angkaKartu[1]) + ")" + list_operator[countOp2] + "(" + std::to_string(angkaKartu[2]) + list_operator[countOp3] + std::to_string(angkaKartu[3]) + ")" << "\n";
-                            if (hasil==24){
+                            
+                            if (hasil==24.0 && find(list_operation.begin(), list_operation.end(), "(" + std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + std::to_string((int) angkaKartu[1]) + ")" + list_operator[countOp2] + "(" + std::to_string((int) angkaKartu[2]) + list_operator[countOp3] + std::to_string((int) angkaKartu[3]) + ")") == list_operation.end()){
                                 //std::cout << "yes\n";
-                                list_operation.push_back("(" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + std::to_string(angkaKartu[1]) + ")" + list_operator[countOp2] + "(" + std::to_string(angkaKartu[2]) + list_operator[countOp3] + std::to_string(angkaKartu[3]) + ")");
+                                //cout << "hasil = " << hasil << " = " << "(" + std::to_string(angkaKartu[0]) + list_operator[countOp1] + std::to_string(angkaKartu[1]) + ")" + list_operator[countOp2] + "(" + std::to_string(angkaKartu[2]) + list_operator[countOp3] + std::to_string(angkaKartu[3]) + ")" << "\n";
+                                list_operation.push_back("(" + std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + std::to_string((int) angkaKartu[1]) + ")" + list_operator[countOp2] + "(" + std::to_string((int) angkaKartu[2]) + list_operator[countOp3] + std::to_string((int) angkaKartu[3]) + ")");
                             }
                             /* A  _((B  _  C) _ D) */
                             hasil1 = charToOp(list_operator[countOp2], angkaKartu[1], angkaKartu[2]); //(B _ C)
                             hasil2 = charToOp(list_operator[countOp3], hasil1, angkaKartu[3]); //((B _ C) _ D)
                             hasil = charToOp(list_operator[countOp1], angkaKartu[0], hasil2); //A _ ((B _ C) _ D)
-                            //cout << "hasil = " << hasil << " = " << std::to_string(angkaKartu[0]) + list_operator[countOp1] + "((" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + std::to_string(angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string(angkaKartu[3]) + ")" << "\n";
-                            if (hasil==24){
+                            
+                            if (hasil==24.0 && find(list_operation.begin(), list_operation.end(), std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + "((" + std::to_string((int) angkaKartu[1]) + list_operator[countOp2] + std::to_string((int) angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string((int) angkaKartu[3]) + ")") == list_operation.end()){
                                 //std::cout << "yes\n";
-                                list_operation.push_back(std::to_string(angkaKartu[0]) + list_operator[countOp1] + "((" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + std::to_string(angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string(angkaKartu[3]) + ")");
+                                //cout << "hasil = " << hasil << " = " << std::to_string(angkaKartu[0]) + list_operator[countOp1] + "((" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + std::to_string(angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string(angkaKartu[3]) + ")" << "\n";
+                                list_operation.push_back(std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + "((" + std::to_string((int) angkaKartu[1]) + list_operator[countOp2] + std::to_string((int) angkaKartu[2]) + ")" + list_operator[countOp3] + std::to_string((int) angkaKartu[3]) + ")");
                             }
                             /* A  _( B  _ (C  _ D)) */
                             hasil1 = charToOp(list_operator[countOp3], angkaKartu[2], angkaKartu[3]); //(C _ D)
                             hasil2 = charToOp(list_operator[countOp2], angkaKartu[1], hasil1); //(B _ (C _ D))
                             hasil = charToOp(list_operator[countOp1], angkaKartu[0], hasil2); //A _ (B _ (C _ D))
-                            //cout << "hasil = " << hasil << " = " << std::to_string(angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + "(" + std::to_string(angkaKartu[2]) + list_operator[countOp3] + std::to_string(angkaKartu[3]) + "))" << "\n";
-                            if (hasil==24){
+                            
+                            if (hasil==24.0 && find(list_operation.begin(), list_operation.end(), std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string((int) angkaKartu[1]) + list_operator[countOp2] + "(" + std::to_string((int) angkaKartu[2]) + list_operator[countOp3] + std::to_string((int) angkaKartu[3]) + "))") == list_operation.end()){
                                 //std::cout << "yes\n";
-                                list_operation.push_back(std::to_string(angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + "(" + std::to_string(angkaKartu[2]) + list_operator[countOp3] + std::to_string(angkaKartu[3]) + "))");
+                                //cout << "hasil = " << hasil << " = " << std::to_string(angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string(angkaKartu[1]) + list_operator[countOp2] + "(" + std::to_string(angkaKartu[2]) + list_operator[countOp3] + std::to_string(angkaKartu[3]) + "))" << "\n";
+                                list_operation.push_back(std::to_string((int) angkaKartu[0]) + list_operator[countOp1] + "(" + std::to_string((int) angkaKartu[1]) + list_operator[countOp2] + "(" + std::to_string((int) angkaKartu[2]) + list_operator[countOp3] + std::to_string((int) angkaKartu[3]) + "))");
                             }
                         }
                     }
@@ -207,7 +223,7 @@ void brute_force(int angkaKartu[4]){
 int main(){
     /* KAMUS */
     std::string kartu[4]; //array of string yang menyimpan input dari pengguna
-    int angkaKartu[4]; //array of int yang menyimpan angka / nilai kartu
+    float angkaKartu[4]; //array of int yang menyimpan angka / nilai kartu
     int count; //angka penghitung
     int inputType; //jenis input: input dari pengguna atau random
     bool isInputValid = false; //validasi input 4 kartu dari pengguna
@@ -303,6 +319,7 @@ int main(){
         } else if (inputType==2) {
             /* Input Random */
             isInputTypeValid = true;
+            srand((unsigned) time(NULL));
             angkaKartu[0] = rand() % 13 + 1;
             angkaKartu[1] = rand() % 13 + 1;
             angkaKartu[2] = rand() % 13 + 1;
@@ -330,7 +347,7 @@ int main(){
     //    std::cout << angkaKartu[count] << "\n";
     //}
 
-    //std::cout << charToOp('+',angkaKartu[2],angkaKartu[3]) << "\n";
+    //std::cout << charToOp('/',angkaKartu[2],angkaKartu[3]) << "\n";
 
     /* PROSES BRUTE FORCE */
     clock_t tStart = clock(); //hitung waktu eksekusi
@@ -346,7 +363,7 @@ int main(){
             cout << list_operation[count] << "\n";
         }
     }
-    std::cout << "Execution Time: " << (double)(clock() - tStart)/CLOCKS_PER_SEC << "\n\n";
+    std::cout << "Execution Time: " << (double)(clock() - tStart)/CLOCKS_PER_SEC * 1000 << " ms\n\n";
 
     /* Simpan hasilnya ke text file */
     std::cout << "Apakah Anda ingin menyimpan solusi? (y/n)\n";
