@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 using namespace std;
 
 /* KAMUS GLOBAL */
@@ -45,7 +46,7 @@ float charToInt (string s){
     } else if (s=="K"){
         return 13;
     } else {
-        return -1;
+        return 0;
     }
 }
 
@@ -96,7 +97,19 @@ float charToOp (char op, float operand1, float operand2){
     }
 }
 
-void brute_force(float angkaKartu[4]){
+vector<string> splitString (const string &strInput){
+    /* Split String dengan delimiter spasi ' ' */
+    vector<string> strResult;
+    char delimiter = ' ';
+    stringstream ss (strInput);
+    string item;
+    while (getline(ss,item,delimiter)){
+        strResult.push_back(item);
+    }
+    return strResult;
+}
+
+void brute_force(vector<float> angkaKartu){
     /* KAMUS LOKAL */
     int counter1,counter2,counter3; //indeks permutasi urutan kartu
     float temp; //variabel untuk swap kartu
@@ -223,10 +236,11 @@ void brute_force(float angkaKartu[4]){
 
 int main(){
     /* KAMUS */
-    std::string kartu[4]; //array of string yang menyimpan input dari pengguna
-    float angkaKartu[4]; //array of int yang menyimpan angka / nilai kartu
+    string inputKartu;
+    vector<string> kartu; //array of string yang menyimpan input dari pengguna
+    vector<float> angkaKartu; //array of int yang menyimpan angka / nilai kartu
     int count; //angka penghitung
-    int inputType; //jenis input: input dari pengguna atau random
+    string inputType; //jenis input: input dari pengguna atau random
     bool isInputValid = false; //validasi input 4 kartu dari pengguna
     bool isInputTypeValid = false; //validasi input random atau dari pengguna
     char saveSolution; //apakah ingin menyimpan solusi (y/n)
@@ -290,48 +304,51 @@ int main(){
     std::cout << "======================================================================================================================================================\n\n";
     
     /* INPUT */
+    
     while (!isInputTypeValid){
         std::cout << "Silakan pilih jenis input!\n1. Input dari pengguna\n2. Input random\n";
-        std::cin >> inputType;
-        if (inputType==1){
+        getline(cin, inputType);
+        if (inputType=="1"){
             /* Input dari pengguna */
             isInputTypeValid = true;
             while (!isInputValid){
+                /* clear vector kartu */
+                kartu.clear();
+                angkaKartu.clear();
                 /* Input 4 Kartu */
                 std::cout << "\nSilakan masukkan 4 angka kartu [A,2,3,4,5,6,7,8,9,10,J,Q,K]!\n";
-                for (count=0; count<=3; count++){
-                    std::cin >> kartu[count];
-                }
-                /* Ubah Input dari Bentuk String Menjadi Int */
+                getline(cin, inputKartu,'\n');
+                /* Split string input */
+                kartu = splitString(inputKartu);
+                /* Ubah Input dari Bentuk String Menjadi Int, jika tidak sesuai maka tidak dimasukkan ke vector angkaKartu */
                 count = 0;
                 while (count <=3 && charToInt(kartu[count]) > 0){
-                    angkaKartu[count] = charToInt(kartu[count]);
-                    //std::cout << angkaKartu[count] << "\n";
+                    angkaKartu.push_back(charToInt(kartu[count]));
                     isInputValid = true;
                     count++;
                 }
                 /* Validasi Input */
-                if (charToInt(kartu[count]) == -1){
-                    std::cout << "Masukan tidak sesuai.\n\n";
+                if ((angkaKartu.size()==0) || (count <= 3 && charToInt(kartu[count]) == 0 && count>0) || (kartu.size()>4)){
+                    /* input tidak valid ketika angka kartu yang dimasukkan tidak sesuai atau angka kartu yang dimasukkan lebih dari 4 buah */
+                    std::cout << "Masukan tidak sesuai.\n";
                     isInputValid = false;
                 }
             }
-        } else if (inputType==2) {
+        } else if (inputType=="2") {
             /* Input Random */
             isInputTypeValid = true;
             srand((unsigned) time(NULL));
-            angkaKartu[0] = rand() % 13 + 1;
-            angkaKartu[1] = rand() % 13 + 1;
-            angkaKartu[2] = rand() % 13 + 1;
-            angkaKartu[3] = rand() % 13 + 1;
             for (count=0; count<=3; count++){
-                kartu[count] = intToChar(angkaKartu[count]);
+                angkaKartu.push_back(rand() % 13 + 1);
+            }
+            for (count=0; count<=3; count++){
+                kartu.push_back(intToChar(angkaKartu[count]));
             }
         } else {
             std::cout << "Masukan tidak sesuai.\n\n";
         }
     }
-
+    
     /* Cetak 4 angka kartu */
     std::cout << "\nKartu: ";
     for (count=0; count<=3; count++){
@@ -342,12 +359,6 @@ int main(){
         std::cout << angkaKartu[count] << " ";
     }
     std::cout << "\n";
-    
-    //for (int count=0; count<=3; count++){
-    //    std::cout << angkaKartu[count] << "\n";
-    //}
-
-    //std::cout << charToOp('/',angkaKartu[2],angkaKartu[3]) << "\n";
 
     /* PROSES BRUTE FORCE */
     auto start = std::chrono::system_clock::now(); //waktu awal eksekusi
