@@ -5,6 +5,7 @@
 - [Sistematika File](#sistematika-file)
 - [Tampilan Program](#tampilan-program)
 - [Instruksi Menjalankan Program](#instruksi-menjalankan-program)
+- [Credits](#credits)
 
 ## Deskripsi Singkat
 ```
@@ -101,3 +102,6 @@ Tucil1_13521059
 - Clone repository ini.
 - Buka terminal pada folder bin.
 - Jalankan program secara langsung dengan command ./kartu24.out pada terminal.
+
+## Credits
+Dibuat oleh Arleen Chrysantha Gunardi (NIM. 13521059).
