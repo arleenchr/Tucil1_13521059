@@ -90,7 +90,7 @@ Tucil1_13521059
 
 ## Tampilan Program
 ### Tampilan Awal
-
+![My Remote Image](https://drive.google.com/file/d/1B98cofMRYCHL-FQBB7Pq4Vyv44fk2gQn/view?usp=sharing)
 
 ### Input Angka Kartu dari Pengguna
 
