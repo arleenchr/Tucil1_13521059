@@ -33,7 +33,7 @@ Tucil1_13521059
 ├─── bin
 |   └─── kartu24.out
 ├─── doc
-|   └─── Tucil1_13521059.pdf
+|   └─── Tucil1_K1_13521059_Arleen Chrysantha Gunardi.pdf
 ├─── src
 |   └─── kartu24.cpp
 ├─── test
